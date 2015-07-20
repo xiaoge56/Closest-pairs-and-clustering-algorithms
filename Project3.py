@@ -142,40 +142,89 @@ class Cluster:
 
 
 def slow_closest_pair(cluster_list):
-	'find closest pair in cluster_list'
-	closest_pair=[float('inf'),-1,-1]
-	for u in xrange(len(cluster_list)):
+    'find closest pair in cluster_list'
+    closest_pair=[float('inf'),-1,-1]
+    for u_item in xrange(len(cluster_list)):
 
-		for v in xrange(u+1,len(cluster_list)):
-			distance=cluster_list[u].distance(cluster_list[v])
-			if closest_pair[0]>distance:
-				closest_pair[0]=distance
-				closest_pair[1]=u
-				closest_pair[2]=v
-	return tuple(closest_pair)
+        for v_item in xrange(u_item+1,len(cluster_list)):
+            distance=cluster_list[u_item].distance(cluster_list[v_item])
+            if closest_pair[0]>distance:
+                closest_pair[0]=distance
+                closest_pair[1]=u_item
+                closest_pair[2]=v_item
+    return tuple(closest_pair)
 
 def fast_closest_pair(cluster_list):
-	'find closest pair in cluster_list ,quick than slow_closest_pair()'
-	closest_pair=[]
-	total_number=len(cluster_list)
-	if total_number<=3:
-		closest_pair=slow_closest_pair(cluster_list)
-	else:
-		mid1=total_number/2
-		cluster_left=cluster_list[:mid1-1]
-		cluster_right=cluster_list[mid1:]
-		left_pair=fast_closest_pair(cluster_left)
-		right_pair=fast_closest_pair(cluster_right)
+    'find closest pair in cluster_list ,quick than slow_closest_pair()'
+    closest_pair=[float('inf'),-1,-1]
+    total_number=len(cluster_list)
+    templist=list(cluster_list)
+    if total_number<=3:
+        closest_pair=slow_closest_pair(cluster_list)
+    else:
+        mid1=total_number/2
+        templist.sort(key = lambda templist: templist.horiz_center())
 
-		#min(left_pair[0],right_pair[0])
-		if left_pair[0]<right_pair[0]:
-			closest_pair[0]=left_pair[0]
-			closest_pair[1]=left_pair[1]
-			closest_pair[2]=left_pair[2]
-		else:
-			closest_pair[0]=right_pair[0]
-			closest_pair[1]=right_pair[1]+mid1
-			closest_pair[2]=right_pair[2]+mid1
-		
-		mid2=1/2*(cluster_list[mid1-1].horiz_center()+cluster_list[mid1].horiz_center())
-		closest_pair
+        cluster_left=templist[:mid1]
+        cluster_right=templist[mid1:]
+
+
+        left_pair=fast_closest_pair(cluster_left)
+        right_pair=fast_closest_pair(cluster_right)
+
+        #min(left_pair[0],right_pair[0])
+        if left_pair[0]<right_pair[0]:
+            closest_pair[0]=left_pair[0]
+            closest_pair[1]=cluster_list.index(templist[left_pair[1]])
+            closest_pair[2]=cluster_list.index(templist[left_pair[2]])
+        else:
+            closest_pair[0]=right_pair[0]
+            print mid1,cluster_list,right_pair[1]+mid1
+            closest_pair[1]=cluster_list.index(templist[right_pair[1]+mid1])
+            closest_pair[2]=cluster_list.index(templist[right_pair[2]+mid1])
+        mid2=1/2*(templist[mid1-1].horiz_center()+templist[mid1].horiz_center())
+        other_point=closest_pair_strip(cluster_list,mid2,closest_pair[0])
+        if closest_pair[0]>other_point[0]:
+            closest_pair[0]=other_point[0]
+            closest_pair[1]=cluster_list.index(other_point[1])
+            closest_pair[2]=cluster_list.index(other_point[2])
+    return tuple(closest_pair)
+def closest_pair_strip(cluster_list, horiz_center, half_width):
+    'find closest pair in  the strip'
+    newlist=[]
+
+
+    for item in cluster_list:
+        if abs(item.horiz_center()-horiz_center)<=half_width:
+            newlist.append(item)
+    newlist.sort(key = lambda newlist: newlist.horiz_center())
+    length_n=len(newlist)
+    closest_pair=[float('inf'),-1,-1]
+    if length_n-2==0:
+        point1,point2=newlist[0],newlist[1]
+        dist=point1.distance(point2)
+        closest_pair[0]=dist
+
+        closest_pair[1]=cluster_list.index(point1)
+
+        closest_pair[2]=cluster_list.index(point2)
+
+        return tuple(closest_pair)
+    else:
+        print newlist
+        for u_item in xrange(length_n+1-2):
+            limit=min(u_item+3,length_n+1-1)
+            for v_item in xrange(u_item+1,limit):
+                print u_item,v_item,u_item+1,limit
+                dist=newlist[u_item].distance(newlist[v_item])
+                if closest_pair[0]>dist:
+                    closest_pair[0]=dist
+                    closest_pair[1]=cluster_list.index(newlist[u_item])
+                    closest_pair[2]=cluster_list.index(newlist[v_item])
+    return tuple(closest_pair)
+# m=closest_pair_strip([Cluster(set([]), 0, 0, 1, 0), Cluster(set([]), 1, 0, 1, 0), Cluster(set([]), 2, 0, 1, 0), Cluster(set([]), 3, 0, 1, 0)], 1.5, 1.0)
+# m=closest_pair_strip([Cluster(set([]), 0.23, 0.94, 1, 0), Cluster(set([]), 0.65, 0.08, 1, 0),Cluster(set([]), 0.66, 0.43, 1, 0), Cluster(set([]), 0.91, 0.6, 1, 0), Cluster(set([]), 0.94, 0.9, 1, 0)], 0.65500000000000003, 0.30149599999999999)
+# print 0.65500000000000003+0.30149599999999999,0.65500000000000003-0.30149599999999999
+# print math.sqrt((0.91-0.66)**2+(0.6-0.43)**2),math.sqrt((0.03)**2+(0.3)**2)
+# m=closest_pair_strip([Cluster(set([]), -1.0, 0.0, 1, 0),Cluster(set([]), -0.99, -10.0, 1, 0),Cluster(set([]), -0.98, -20.0, 1, 0), Cluster(set([]), 0.98, 20.0, 1, 0), Cluster(set([]), 0.99, 10.0, 1, 0), Cluster(set([]), 1.0, 0.0, 1, 0)], 0.0, 10.000005)
+print fast_closest_pair([Cluster(set([]), 1.0, 0.0, 1, 0), Cluster(set([]), 4.0, 0.0, 1, 0), Cluster(set([]), 5.0, 0.0, 1, 0), Cluster(set([]), 7.0, 0.0, 1, 0)])  #expected one of the tuples in set([(1.0, 1, 2), (1.0, 0, 1), (1.0, 2, 3)])
