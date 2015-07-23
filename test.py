@@ -1,3 +1,4 @@
+#coding:utf-8
 """
 Example code for creating and visualizing
 cluster of county-based cancer risk data
@@ -52,6 +53,7 @@ def load_data_table(data_url):
     #data_file = urllib2.urlopen(data_url)
     data_file=open('dat/'+data_url)
     data = data_file.read()
+    data_file.close()
     data_lines = data.split('\n')
     print "Loaded", len(data_lines), "data points"
     data_tokens = [line.split(',') for line in data_lines]

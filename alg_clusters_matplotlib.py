@@ -8,9 +8,9 @@ import matplotlib.pyplot as plt
 
 
 # URLS for various important datasets
-DIRECTORY = "http://commondatastorage.googleapis.com/codeskulptor-assets/"
-MAP_URL = DIRECTORY + "data_clustering/USA_Counties.png"
-
+# DIRECTORY = "http://commondatastorage.googleapis.com/codeskulptor-assets/"
+# MAP_URL = DIRECTORY + "data_clustering/USA_Counties.png"
+MAP_URL="(MAP_URL)USA_Counties.png"
 # Define colors for clusters.  Display a max of 16 clusters.
 COLORS = ['Aqua', 'Yellow', 'Blue', 'Fuchsia', 'Black', 'Green', 'Lime', 'Maroon', 'Navy', 'Olive', 'Orange', 'Purple', 'Red', 'Brown', 'Teal']
 
@@ -35,9 +35,11 @@ def plot_clusters(data_table, cluster_list, draw_centers = False):
         fips_to_line[data_table[line_idx][0]] = line_idx
      
     # Load map image
-    map_file = urllib2.urlopen(MAP_URL)
-    map_img = plt.imread(map_file)
-
+    # map_file = urllib2.urlopen(MAP_URL)
+    # map_file=open('./dat/'+MAP_URL).read()
+    
+    map_img = plt.imread('./dat/'+MAP_URL)
+    # map_file.close()
     # Scale plot to get size similar to CodeSkulptor version
     ypixels, xpixels, bands = map_img.shape
     DPI = 60.0                  # adjust this constant to resize your plot
