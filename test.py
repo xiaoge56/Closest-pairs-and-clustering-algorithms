@@ -1,55 +1,149 @@
-# coding=utf-8
-def kmeans_clustering(cluster_list, num_clusters, num_iterations):
-    'find K clusters in some points or data by hierarchical_clustering'
-    total_n=num_clusters
-    new_cluster_list=[c.copy() for c in cluster_list]
-    new_cluster_list.sort(key = lambda new_cluster_list: new_cluster_list.total_population())
+"""
+Example code for creating and visualizing
+cluster of county-based cancer risk data
 
-    centroids=new_cluster_list[-total_n:]
-    print centroids
+Note that you must download the file
+http://www.codeskulptor.org/#alg_clusters_matplotlib.py
+to use the matplotlib version of this code
+"""
 
-    fanhui=[]
-    while num_iterations>0:
-        num_iterations-=1
-        retset=[]
-        for m_num in range(num_clusters):
-            retset.append([])
-        for point in new_cluster_list:#开始对每个点进行染色
-            dist=[]#每轮迭代中，点最靠近哪个类心
-            poi=point.copy()
-            for centroid in centroids:
+# Flavor of Python - desktop or CodeSkulptor
+DESKTOP = True
 
-                dist.append(point.distance(centroid))
-            index=dist.index(min(dist))
-            retset[index].append(poi)
+import math
+import random
+import urllib2
+import alg_cluster
 
-        for index in range(num_clusters):
-            for point in retset:
-                if len(point)==1:
-                    new_cent=point
-                else:
-                    # massset=[c.copy() for c in point]
-                    massset=[c.copy() for c in point]
-                    # massset=emtpys[cent_index]
-                    new_cent=reduce(lambda x,y:x.merge_clusters(y),massset)
+# conditional imports
+if DESKTOP:
+    import alg_project3_solution      # desktop project solution
+    import alg_clusters_matplotlib
+else:
+    #import userXX_XXXXXXXX as alg_project3_solution   # CodeSkulptor project solution
+    import alg_clusters_simplegui
+    import codeskulptor
+    codeskulptor.set_timeout(30)
 
-                    #
-                    # list_del=[c.copy() for c in massset[1:]]
-                    # for del_point in list_del:
-                    #     pass
-            centroids[index]=new_cent
-        fanhui=retset
-    real_list=[]
-    for m in fanhui:
-        if len(m)==1:
-            real_list.append(m[0])
+
+###################################################
+# Code to load data tables
+
+# URLs for cancer risk data tables of various sizes
+# Numbers indicate number of counties in data table
+
+# DIRECTORY = "http://commondatastorage.googleapis.com/codeskulptor-assets/"
+# DATA_3108_URL = DIRECTORY + "data_clustering/unifiedCancerData_3108.csv"
+# DATA_896_URL = DIRECTORY + "data_clustering/unifiedCancerData_896.csv"
+# DATA_290_URL = DIRECTORY + "data_clustering/unifiedCancerData_290.csv"
+# DATA_111_URL = DIRECTORY + "data_clustering/unifiedCancerData_111.csv"
+
+DATA_3108_URL = "(DATA_3108_URL)unifiedCancerData_3108.csv"
+DATA_896_URL = "(DATA_896_URL)unifiedCancerData_896.csv"
+DATA_290_URL = "(DATA_290_URL)unifiedCancerData_290.csv"
+DATA_111_URL = "(DATA_111_URL)unifiedCancerData_111.csv"
+
+def load_data_table(data_url):
+    """
+    Import a table of county-based cancer risk data
+    from a csv format file
+    """
+
+    #data_file = urllib2.urlopen(data_url)
+    data_file=open('dat/'+data_url)
+    data = data_file.read()
+    data_lines = data.split('\n')
+    print "Loaded", len(data_lines), "data points"
+    data_tokens = [line.split(',') for line in data_lines]
+    return [[tokens[0], float(tokens[1]), float(tokens[2]), int(tokens[3]), float(tokens[4])] 
+            for tokens in data_tokens]
+
+
+############################################################
+# Code to create sequential clustering
+# Create alphabetical clusters for county data
+
+def sequential_clustering(singleton_list, num_clusters):
+    """
+    Take a data table and create a list of clusters
+    by partitioning the table into clusters based on its ordering
+    
+    Note that method may return num_clusters or num_clusters + 1 final clusters
+    """
+    
+    cluster_list = []
+    cluster_idx = 0
+    total_clusters = len(singleton_list)
+    cluster_size = float(total_clusters)  / num_clusters
+    
+    for cluster_idx in range(len(singleton_list)):
+        new_cluster = singleton_list[cluster_idx]
+        if math.floor(cluster_idx / cluster_size) != \
+           math.floor((cluster_idx - 1) / cluster_size):
+            cluster_list.append(new_cluster)
         else:
-            a=m[0]
-            for x in m[1:]:
-                a.merge_clusters(x)
-            real_list.append(a)
+            cluster_list[-1] = cluster_list[-1].merge_clusters(new_cluster)
+            
+    return cluster_list
+                
+
+#####################################################################
+# Code to load cancer data, compute a clustering and 
+# visualize the results
+
+
+def run_example():
+    """
+    Load a data table, compute a list of clusters and 
+    plot a list of clusters
+
+    Set DESKTOP = True/False to use either matplotlib or simplegui
+    """
+    data_table = load_data_table(DATA_3108_URL)
+    
+    singleton_list = []
+    for line in data_table:
+        singleton_list.append(alg_cluster.Cluster(set([line[0]]), line[1], line[2], line[3], line[4]))
+        
+    cluster_list = sequential_clustering(singleton_list, 15)    
+    print "Displaying", len(cluster_list), "sequential clusters"
+
+    #cluster_list = alg_project3_solution.hierarchical_clustering(singleton_list, 9)
+    #print "Displaying", len(cluster_list), "hierarchical clusters"
+
+    #cluster_list = alg_project3_solution.kmeans_clustering(singleton_list, 9, 5)   
+    #print "Displaying", len(cluster_list), "k-means clusters"
+
+            
+    # draw the clusters using matplotlib or simplegui
+    if DESKTOP:
+        alg_clusters_matplotlib.plot_clusters(data_table, cluster_list, False)
+        #alg_clusters_matplotlib.plot_clusters(data_table, cluster_list, True)  #add cluster centers
+    else:
+        alg_clusters_simplegui.PlotClusters(data_table, cluster_list)   # use toggle in GUI to add cluster centers
+    
+run_example()
 
 
 
 
-    return real_list
+
+    
+
+
+
+
+
+  
+        
+
+
+
+
+
+
+        
+
+
+
+
