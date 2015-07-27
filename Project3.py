@@ -308,7 +308,7 @@ def kmeans_clustering(cluster_list, num_clusters, num_iterations):
 def gen_random_clusters(num_clusters):
 
     ret=[]
-    
+
     for x in range(num_clusters):
         ret.append(Cluster(fips_codes=None,horiz_pos=random.uniform(-1,1),vert_pos=random.uniform(-1,1),population=None,risk=None))
     return ret
@@ -337,37 +337,43 @@ def draw_pic(number):
     show_pic([slowtime,fasttime],number)
 
 def show_pic(dat,number):
-    import matplotlib.pyplot as plt 
-    import numpy as np    
+    import matplotlib.pyplot as plt
+    import numpy as np
     import math
-    x = number 
-    # f1 = np.power(10, x) 
-    # f2 = np.power(math.e, x) 
-    # f3 = np.power(2, x)  
-    f1=dat[0]
-    f2=dat[1]
-    print f1,f2
-    plt1,=plt.plot(x,f1,'r',linewidth=2,label="test1") 
-    plt2,=plt.plot( x, f2, 'b',linewidth=2,label='12') 
-    # plt3,=plt.plot( x, f3, 'g', linewidth=2,label='13') 
+    x = range(6,21)
+    # f1 = np.power(10, x)
+    # f2 = np.power(math.e, x)
+    # f3 = np.power(2, x)
+    # f1=dat[0]
+    # f2=dat[1]
+    # f1=[855406302600.9297, 480503404944.0076, 430845493901.49805, 271254226924.20044, 175790688405.0409, 174267507472.60233, 173535638065.67514, 173058588040.28052, 165471040577.26993, 164745271371.3518, 163567291743.99063, 162018028052.88675, 161626921206.76382, 123483080788.27682, 123389671106.6206]
+    # f2=[473061548301.70715, 304487213235.6512, 256295541683.3451, 175163886915.8305, 136007319294.4524, 128691501288.44058, 123364931819.36792, 95061330400.91188, 92851824733.89171, 83751677988.91675, 76305792806.40343, 75195590422.55962, 47956771398.369995, 43572685067.32205, 43346616567.371]
+    # f1=[1432446364647.4844, 1256566786124.0432, 726141205120.5591, 656031563613.5234, 619318206656.0833, 557173759501.5332, 449630999209.31024, 397796574329.073, 397061951861.49567, 238910074068.03925, 232286884261.0091, 220231070772.07333, 218182336738.10092, 215763229779.78583, 186562044404.0627]
+    # f2=[1721363375274.0854, 873386979469.728, 607704110695.7352, 607404453849.4803, 479106607308.09143, 452595640777.7162, 409759400590.0936, 300957083742.44525, 273999812286.6749, 265642320327.18256, 257523094470.34375, 210882439099.43875, 209424475932.7962, 165854841465.23853, 158866394846.55307]
+    f1=[2376173737632.799, 1632162002379.898, 1149516152182.7866, 1005638949041.6797, 941617184525.7504, 873017865209.8881, 717297472806.9474, 707481162063.751, 693980006271.2808, 477113007869.9134, 475260676178.591, 441641633333.3453, 418814444487.6941, 392190427938.54205, 341850583704.0547]
+    f2=[2211819145957.39, 1263342391158.5552, 1228012004919.8132, 972923457621.6616, 947764944638.2126, 887973140164.1119, 775480684213.734, 635476455541.3551, 581040540888.1357, 509864466993.6245, 504815920302.4635, 468733959164.0339, 466383317148.95233, 463371219437.6528, 377806730495.8185]
 
+    plt1,=plt.plot(x,f1,'r',linewidth=2,label="k-means")
+    plt2,=plt.plot( x, f2, 'b',linewidth=2,label='hierarchical clustering')
+    # plt3,=plt.plot( x, f3, 'g', linewidth=2,label='13')
+    # print 'a'
     # plt.axis([-4, 4, -0.5, 8])
-    plt.text(1, 7.5, r'$10^x$', )
-    plt.text(2.2, 7.5, r'$e^x$')
-    plt.text(3.2, 7.5, r'$2^x$')
-    plt.legend([plt1,plt2], ["slow_closest_pairs",'fast_closest_pair'],loc=2)
+    # plt.text(1, 7.5, r'$10^x$', )
+    # plt.text(2.2, 7.5, r'$e^x$')
+    # plt.text(3.2, 7.5, r'$2^x$')
+    plt.legend([plt1,plt2], ["k-means",'hierarchical clustering'],loc=1)
     plt.xlabel('the number of n Clusters')
-    plt.ylabel('running time')
-    plt.title('slow_closest_pairs VS fast_closest_pair(python desktop)')
-    
+    plt.ylabel('distortion')
+    plt.title('896 data points:k-means VS hierarchical clustering (python desktop)\n')
+
     plt.grid(True)
-    
+
     plt.show()
 def alg_project3_viz():
     pass
 
 def main():
-    number=range(2,500)
+    number=range(2,200)
     draw_pic(number)
 if __name__ == '__main__':
     main()

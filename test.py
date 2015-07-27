@@ -101,29 +101,51 @@ def run_example():
 
     Set DESKTOP = True/False to use either matplotlib or simplegui
     """
-    data_table = load_data_table(DATA_3108_URL)
-    
-    singleton_list = []
-    for line in data_table:
-        singleton_list.append(alg_cluster.Cluster(set([line[0]]), line[1], line[2], line[3], line[4]))
-        
-    cluster_list = sequential_clustering(singleton_list, 15)    
-    print "Displaying", len(cluster_list), "sequential clusters"
+    # data_table = load_data_table(DATA_3108_URL)
 
-    #cluster_list = alg_project3_solution.hierarchical_clustering(singleton_list, 9)
-    #print "Displaying", len(cluster_list), "hierarchical clusters"
+    print 'in run_example'
 
-    #cluster_list = alg_project3_solution.kmeans_clustering(singleton_list, 9, 5)   
-    #print "Displaying", len(cluster_list), "k-means clusters"
+    k_n=[]
+    h_n=[]
+    for x in range(6,21):
+        print '------>:',x,'<-----\n'
+        # kmeans
+        data_table=load_data_table(DATA_111_URL)
+        singleton_list=[]
+        for line in data_table:
+            singleton_list.append(alg_cluster.Cluster(set([line[0]]), line[1], line[2], line[3], line[4]))
+        cluster_list_k = alg_project3_solution.kmeans_clustering(singleton_list, x, 5)
+        kmeans=reduce(lambda x,y:x+y,map(lambda x:x.cluster_error(data_table),cluster_list_k))
+        k_n.append(kmeans)
 
-            
+        #hierarchical
+        data_table=load_data_table(DATA_111_URL)
+        singleton_list=[]
+        for line in data_table:
+            singleton_list.append(alg_cluster.Cluster(set([line[0]]), line[1], line[2], line[3], line[4]))
+        cluster_list_h = alg_project3_solution.hierarchical_clustering(singleton_list, x)
+        hierarchical=reduce(lambda x,y:x+y,map(lambda x:x.cluster_error(data_table),cluster_list_h))
+        h_n.append(hierarchical)
+    print 'kmean:',k_n
+    print 'hierarchical:',h_n
+
+
+
+
+
+
+
     # draw the clusters using matplotlib or simplegui
-    if DESKTOP:
-        alg_clusters_matplotlib.plot_clusters(data_table, cluster_list, False)
-        #alg_clusters_matplotlib.plot_clusters(data_table, cluster_list, True)  #add cluster centers
-    else:
-        alg_clusters_simplegui.PlotClusters(data_table, cluster_list)   # use toggle in GUI to add cluster centers
-    
+    # if DESKTOP:
+    #     # alg_clusters_matplotlib.plot_clusters(data_table, cluster_list, False)
+    #     alg_clusters_matplotlib.plot_clusters(data_table, cluster_list_h, True)  #add cluster centers
+    # else:
+    #     alg_clusters_simplegui.PlotClusters(data_table, cluster_list_h)   # use toggle in GUI to add cluster centers
+def get_time():
+    import time
+    return time.clock()
+
+
 run_example()
 
 

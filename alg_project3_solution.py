@@ -234,9 +234,10 @@ def hierarchical_clustering(cluster_list, num_clusters):
     k_cluster=len(cluster_list)
 
     while k_cluster>num_clusters:
+
         close_pair=fast_closest_pair(cluster_list)
         point1,pomit2=cluster_list[close_pair[1]],cluster_list[close_pair[2]]
-        print point1,point1
+        # print point1,point1
         new_point=point1.merge_clusters(pomit2)
         cluster_list.append(new_point)
         cluster_list.remove(point1)
@@ -245,19 +246,17 @@ def hierarchical_clustering(cluster_list, num_clusters):
     return cluster_list
 def kmeans_clustering(cluster_list, num_clusters, num_iterations):
     'find K clusters in some points or data by hierarchical_clustering'
-    total_n=num_clusters
+    # total_n=num_clusters
     new_cluster_list=[c.copy() for c in cluster_list]
     new_cluster_list.sort(key = lambda new_cluster_list: new_cluster_list.total_population())
-
-    centroids=new_cluster_list[-total_n:]
-
-
+    centroids=new_cluster_list[-num_clusters:]
     fanhui=[]
     while num_iterations>0:
+
         num_iterations-=1
         retset=[]
         for m_num in range(num_clusters):
-            print m_num
+
             retset.append([])
         for point in new_cluster_list:#开始对每个点进行染色
 
